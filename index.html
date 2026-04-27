@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nishant Mewar | Private Portrait & Event Photography in [City]</title>
-<meta name="description" content="Book professional private photography sessions for portraits and events in [City]. Highly personal, tailored photography with fast booking.">
-<meta name="keywords" content="photographer, [City], portrait photography, event photography, private sessions, Nishant Mewar">
+<title>Nishant Mewar | Private Portrait & Event Photography</title>
+<meta name="description" content="Book professional private photography sessions for portraits and events. Highly personal, tailored photography with fast booking.">
+<meta name="keywords" content="photographer, portrait photography, event photography, private sessions, Nishant Mewar">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -138,6 +138,7 @@
   .form-textarea { resize: none; height: 120px; }
   .form-select option { background: var(--black); }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .full-width { grid-column: span 2; }
   
   .submit-btn { border: none; padding: 18px 48px; font-family: 'DM Mono', monospace; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; cursor: none; align-self: flex-start; }
   
@@ -173,6 +174,7 @@
     .services-grid { grid-template-columns: 1fr; }
     .booking-section { grid-template-columns: 1fr; gap: 40px; }
     .form-row { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
     .stats-strip { padding: 20px 24px; gap: 32px; }
     footer { padding: 32px 24px; flex-direction: column; gap: 16px; text-align: center; }
     
@@ -231,7 +233,7 @@
     <div class="hero-bg-img" style="background-image:url('https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=2089&auto=format&fit=crop')"></div>
   </div>
   <div class="hero-content">
-    <div class="hero-eyebrow reveal">Based in [City], [Country]</div>
+    <div class="hero-eyebrow reveal">Based in The Hague, Netherlands</div>
     <h1 class="hero-title reveal reveal-delay-1">Professional Portrait &amp; <br><em>Event Photography</em></h1>
     <p class="hero-sub reveal reveal-delay-2">Private photography sessions that capture raw emotion, fleeting moments, and authentic human connection. More personal, highly tailored, and beautifully captured.</p>
     <a href="#booking" class="hero-cta reveal reveal-delay-3">Book Now in 30 Seconds</a>
@@ -275,11 +277,11 @@
   <div class="services-grid">
     <div class="service-card reveal reveal-delay-2">
       <p class="testimonial-text">"Nishant made my portrait session incredibly relaxed and fun. I am usually very camera shy, but he gave great direction and the photos turned out better than I could have imagined! Highly recommended."</p>
-      <div class="testimonial-author">- Sarah J., [City]</div>
+      <div class="testimonial-author">- Sarah J., The Hague</div>
     </div>
     <div class="service-card reveal reveal-delay-3">
       <p class="testimonial-text">"Booked him for a private family event. He was professional, punctual, and blended right into the crowd to capture the most authentic, candid moments. Will definitely book again."</p>
-      <div class="testimonial-author">- Mark T., [Nearby City]</div>
+      <div class="testimonial-author">- Mark T., Amsterdam</div>
     </div>
   </div>
 </section>
@@ -315,19 +317,23 @@
     
     <div class="contact-detail reveal reveal-delay-2">
       <div class="contact-detail-icon">📍</div>
-      [City], [Country]
+      The Hague, Netherlands
     </div>
     <div class="contact-detail reveal reveal-delay-3">
       <div class="contact-detail-icon">✉</div>
-      hello@nishantmewar.com
+      nishantmewar@icloud.com
     </div>
     <div class="contact-detail reveal reveal-delay-3">
       <div class="contact-detail-icon">☎</div>
-      +1 (555) 123-4567
+      +31 6 29425655
     </div>
   </div>
 
-  <form action="https://formspree.io/f/your_formspree_id" method="POST" class="booking-form reveal reveal-delay-2 hover-target" id="bookingForm">
+  <form action="https://formsubmit.co/nishantmewar@icloud.com" method="POST" class="booking-form reveal reveal-delay-2 hover-target" id="bookingForm">
+    <input type="hidden" name="_subject" value="New Photography Booking Request!">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_autoresponse" value="Thank you for your booking request! I have received your details and will get back to you shortly.">
+
     <div class="form-row">
       <div class="form-group">
         <label class="form-label" for="name">Name</label>
@@ -338,7 +344,12 @@
         <input type="email" name="email" class="form-input" id="email" required placeholder="john@example.com">
       </div>
     </div>
+    
     <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="phone">Phone Number</label>
+        <input type="tel" name="phone" class="form-input" id="phone" required placeholder="+31 6 1234 5678">
+      </div>
       <div class="form-group">
         <label class="form-label" for="service">Service</label>
         <select name="service" class="form-select" id="service" required>
@@ -348,7 +359,10 @@
           <option value="custom">Custom Request</option>
         </select>
       </div>
-      <div class="form-group">
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group full-width">
         <label class="form-label">Preferred Date</label>
         <div class="cal-wrapper hover-target">
           <div class="form-input cal-trigger" id="calTrigger" onclick="toggleCal()">
@@ -371,6 +385,7 @@
         </div>
       </div>
     </div>
+    
     <div class="form-group">
       <label class="form-label" for="message">Project Details</label>
       <textarea name="message" class="form-textarea" id="message" required placeholder="Tell me a bit about what you're looking for..."></textarea>
