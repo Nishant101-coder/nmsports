@@ -1,20 +1,3 @@
-logo
-more
-question-ai-logo
-managemanage
-managemanage
-useruser
-fullfull
-closeclose
-Chat AI
-logo
-more
-question-ai-logo
-managemanage
-managemanage
-useruser
-fullfull
-closeclose
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -872,7 +855,7 @@ closeclose
   function renderBookings(bookings, tbody, statsRow) {
     const singles = bookings.filter(b => b.package && b.package.includes('Single')).length;
     const teams   = bookings.filter(b => b.package && b.package.includes('Team')).length;
-    const revenue = singles * 5 + teams * 25;
+    const revenue = singles * 10 + teams * 40;
     statsRow.innerHTML = `<div class="dev-stat"><div class="dev-stat-n">${bookings.length}</div><div class="dev-stat-l">Total Bookings</div></div><div class="dev-stat"><div class="dev-stat-n">${singles}</div><div class="dev-stat-l">Single Sessions</div></div><div class="dev-stat"><div class="dev-stat-n">${teams}</div><div class="dev-stat-l">Team Sessions</div></div><div class="dev-stat"><div class="dev-stat-n">&euro;${revenue}</div><div class="dev-stat-l">Est. Revenue</div></div>`;
     if (!bookings.length) { tbody.innerHTML = '<tr><td colspan="8" class="dev-empty">No bookings yet.</td></tr>'; return; }
     tbody.innerHTML = bookings.map((b, i) => {
