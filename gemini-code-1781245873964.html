@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMSports | Premium Sports Photography</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
+
+    <style>
+        /* Base & Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #000; color: #fff; overflow-x: hidden; line-height: 1.6; }
+        
+        /* Navigation */
+        nav { position: fixed; top: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s ease; }
+        .logo { font-size: 24px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links button { background: none; border: none; color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: color 0.3s; }
+        .nav-links button.active, .nav-links button:hover { color: #fff; }
+
+        /* Tab Containers */
+        .tab-content { display: none; min-height: 100vh; animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- HOME TAB (Cinematic Scroll) --- */
+        #story-container { height: 300vh; position: relative; }
+        .sticky-wrapper { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s ease-out; }
+        .slide:nth-child(1) { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; transform: scale(1); transition: transform 0.1s ease-out; }
+        .slide-content { position: absolute; bottom: 15%; left: 10%; max-width: 600px; }
+        .slide-content h2 { font-size: 5rem; font-weight: 200; margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; }
+        .slide-content p { font-size: 1.5rem; color: #ccc; font-weight: 300; }
+
+        /* --- PORTFOLIO TAB --- */
+        #portfolio-tab { padding-top: 120px; }
+        .portfolio-header { text-align: center; margin-bottom: 40px; }
+        .portfolio-header h1 { font-size: 3rem; font-weight: 200; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .sub-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 50px; }
+        .sub-nav button { background: none; border: 1px solid #333; color: #888; padding: 8px 25px; border-radius: 30px; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .sub-nav button.active, .sub-nav button:hover { background: #fff; color: #000; border-color: #fff; }
+
+        .masonry { column-count: 3; column-gap: 20px; padding: 0 5%; max-width: 1600px; margin: 0 auto 100px auto; }
+        @media (max-width: 1024px) { .masonry { column-count: 2; } }
+        @media (max-width: 600px) { .masonry { column-count: 1; } }
+        .masonry-item { margin-bottom: 20px; break-inside: avoid; overflow: hidden; border-radius: 8px; display: block; position: relative; }
+        .masonry-item img { width: 100%; display: block; filter: grayscale(20%) brightness(0.8); transition: transform 0.6s ease, filter 0.6s ease; cursor: pointer; }
+        .masonry-item:hover img { transform: scale(1.04); filter: grayscale(0%) brightness(1.1); }
+
+        /* --- NEWS TAB --- */
+        #news-tab { padding-top: 120px; }
+        .news-header { text-align: center; margin-bottom: 60px; }
+        .news-header h1 { font-size: 3rem; font-weight: 200; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 40px; padding: 0 5%; max-width: 1400px; margin: 0 auto 100px auto; }
+        .news-card { cursor: pointer; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden; transition: all 0.4s ease; background: #080808; group: relative; }
+        .news-card:hover { border-color: #444; transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+        .news-img { width: 100%; height: 280px; object-fit: cover; transition: transform 0.6s ease; }
+        .news-card:hover .news-img { transform: scale(1.03); }
+        .news-content { padding: 30px; }
+        .news-date { color: #666; font-size: 0.85rem; margin-bottom: 15px; display: block; text-transform: uppercase; letter-spacing: 1px; }
+        .news-title { font-size: 1.6rem; font-weight: 300; margin-bottom: 15px; line-height: 1.3; }
+        .news-excerpt { color: #999; font-size: 1.05rem; }
+
+        /* Article Reader Modal */
+        #article-reader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; overflow-y: auto; padding: 100px 5% 50px 5%; animation: fadeIn 0.4s ease; }
+        .close-article { position: fixed; top: 30px; left: 40px; color: #888; cursor: pointer; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; border: 1px solid #333; z-index: 201; }
+        .close-article:hover { color: #fff; border-color: #fff; }
+        .article-container { max-width: 800px; margin: 0 auto; }
+        #reader-title { font-size: 4rem; font-weight: 200; line-height: 1.1; margin-bottom: 20px; }
+        #reader-date { color: #888; margin-bottom: 40px; font-size: 1.1rem; }
+        #reader-img { width: 100%; height: 65vh; object-fit: cover; border-radius: 12px; margin-bottom: 50px; }
+        #reader-body { font-size: 1.25rem; color: #ccc; line-height: 1.9; white-space: pre-wrap; padding-bottom: 100px; }
+
+        /* --- BOOKING TAB --- */
+        #booking-tab { padding-top: 120px; }
+        .booking-wrapper { display: flex; flex-wrap: wrap; gap: 60px; max-width: 1200px; margin: 0 auto 100px auto; padding: 0 5%; }
+        .contact-info { flex: 1; min-width: 300px; }
+        .contact-info h1 { font-size: 3.5rem; font-weight: 200; margin-bottom: 20px; text-transform: uppercase; line-height: 1.1; }
+        .contact-info p { color: #888; font-size: 1.2rem; margin-bottom: 50px; }
+        .contact-detail { margin-bottom: 35px; }
+        .contact-detail h3 { font-size: 0.9rem; text-transform: uppercase; color: #555; letter-spacing: 1px; margin-bottom: 5px; }
+        .contact-detail p { font-size: 1.5rem; font-weight: 300; color: #eee; }
+        
+        .booking-form { flex: 1.5; min-width: 350px; background: #080808; padding: 50px; border-radius: 16px; border: 1px solid #1a1a1a; }
+        .form-row { display: flex; gap: 20px; margin-bottom: 25px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 16px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 1rem; transition: all 0.3s; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #666; background: #111; }
+        
+        /* Custom Calendar Dropdown Icon Filter */
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        
+        .form-group textarea { min-height: 150px; resize: vertical; }
+        .submit-btn { width: 100%; padding: 20px; background: #fff; color: #000; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .submit-btn:hover { background: #ccc; }
+
+        /* --- DEV PANEL --- */
+        #auth-modal, #dev-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); z-index: 1000; align-items: center; justify-content: center; }
+        .dev-box { background: #0a0a0a; padding: 50px; border-radius: 16px; border: 1px solid #222; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
+        .dev-box h2 { font-weight: 200; margin-bottom: 30px; font-size: 2rem; border-bottom: 1px solid #222; padding-bottom: 15px; }
+        .dev-box label { display: block; color: #888; margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; }
+        .dev-box input, .dev-box select, .dev-box textarea { width: 100%; padding: 15px; margin-bottom: 25px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
+        .dev-box button.action-btn { background: #fff; color: #000; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 1.1rem; }
+        .dev-box button.danger-btn { background: transparent; border: 1px solid #ff4444; color: #ff4444; margin-top: 15px; }
+        
+        .dev-tabs { display: flex; gap: 10px; margin-bottom: 30px; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #222; }
+        .dev-tabs button { background: transparent; border: none; color: #888; flex: 1; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+        .dev-tabs button.active { background: #222; color: #fff; }
+        .dev-section { display: none; animation: fadeIn 0.3s ease; }
+        .dev-section.active { display: block; }
+        .close-dev { position: absolute; top: 40px; right: 50px; font-size: 2.5rem; color: #555; cursor: pointer; transition: color 0.3s; }
+        .close-dev:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav id="main-nav">
+        <div class="logo" onclick="switchMainTab('home')">NMSports</div>
+        <div class="nav-links">
+            <button onclick="switchMainTab('home')" id="nav-home" class="active">Home</button>
+            <button onclick="switchMainTab('portfolio')" id="nav-portfolio">Portfolio</button>
+            <button onclick="switchMainTab('news')" id="nav-news">News</button>
+            <button onclick="switchMainTab('booking')" id="nav-booking">Booking</button>
+        </div>
+    </nav>
+
+    <section id="home-tab" class="tab-content active">
+        <div id="story-container">
+            <div class="sticky-wrapper">
+                <div class="slide">
+                    <img src="IMG_3509.jpg" alt="Tennis">
+                    <div class="slide-content"><h2>Precision.</h2><p>Mastering the baseline.</p></div>
+                </div>
+                <div class="slide">
+                    <img src="IMG_7914.jpg" alt="Football">
+                    <div class="slide-content"><h2>Emotion.</h2><p>The peak moments of victory.</p></div>
+                </div>
+                <div class="slide">
+                    <img src="_MG_5538.jpg" alt="Basketball">
+                    <div class="slide-content"><h2>Elevation.</h2><p>Defying gravity at the rim.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio-tab" class="tab-content">
+        <div class="portfolio-header">
+            <h1>Selected Works</h1>
+        </div>
+        
+        <div class="sub-nav">
+            <button class="filter-btn active" onclick="filterGallery('all')">All</button>
+            <button class="filter-btn" onclick="filterGallery('football')">Football</button>
+            <button class="filter-btn" onclick="filterGallery('basketball')">Basketball</button>
+            <button class="filter-btn" onclick="filterGallery('tennis')">Tennis</button>
+        </div>
+
+        <div class="masonry" id="gallery-grid">
+            </div>
+    </section>
+
+    <section id="news-tab" class="tab-content">
+        <div class="news-header">
+            <h1>Stories & Updates</h1>
+        </div>
+        
+        <div class="news-grid" id="news-grid-container">
+            </div>
+    </section>
+
+    <div id="article-reader">
+        <div class="close-article" onclick="closeArticle()">← Back</div>
+        <div class="article-container">
+            <h1 id="reader-title">Title</h1>
+            <p id="reader-date">Date</p>
+            <img id="reader-img" src="" alt="">
+            <div id="reader-body"></div>
+        </div>
+    </div>
+
+    <section id="booking-tab" class="tab-content">
+        <div class="booking-wrapper">
+            <div class="contact-info">
+                <h1>Book A Session</h1>
+                <p>Secure high-performance photography for your next event, match, or training session.</p>
+                
+                <div class="contact-detail">
+                    <h3>Direct Email</h3>
+                    <p>nishantmewar@icloud.com</p>
+                </div>
+                <div class="contact-detail">
+                    <h3>Phone / WhatsApp</h3>
+                    <p>+31 6 29 42 56 55</p>
+                </div>
+            </div>
+
+            <div class="booking-form">
+                <form id="auto-email-form">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" id="b-name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Info</label>
+                            <input type="text" id="b-contact" required placeholder="Email or Phone">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Package Option</label>
+                            <select id="b-package" required>
+                                <option value="Individual Coverage (€10)">Individual Coverage (€10)</option>
+                                <option value="Full Team Coverage (€40)">Full Team Coverage (€40)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sport</label>
+                            <select id="b-sport" required>
+                                <option value="Tennis">Tennis</option>
+                                <option value="Football">Football</option>
+                                <option value="Basketball">Basketball</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Requested Date</label>
+                        <input type="date" id="b-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Event Details & Location</label>
+                        <textarea id="b-details" required placeholder="Where is the match? Are there any specific moments or players you want highlighted?"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Prepare Request Email</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="auth-modal">
+        <div class="close-dev" onclick="closeDevPanel()">×</div>
+        <div class="dev-box" style="width: 450px; padding: 40px;">
+            <h2 style="border: none; margin-bottom: 10px;">Developer Login</h2>
+            <p style="color: #666; margin-bottom: 25px;">Enter credentials to access the CMS.</p>
+            <input type="password" id="dev-password" placeholder="Password">
+            <button class="action-btn" onclick="checkPassword()">Access Dashboard</button>
+            <p id="auth-error" style="color: #ff4444; margin-top: 15px; display: none; font-size: 0.9rem; text-align: center;">Incorrect password.</p>
+        </div>
+    </div>
+
+    <div id="dev-panel">
+        <div class="close-dev" onclick="closeDevPanel()">×</div>
+        <div class="dev-box">
+            <h2>NMSports CMS</h2>
+            
+            <div class="dev-tabs">
+                <button class="dev-tab-btn active" onclick="switchDevTab('dev-portfolio')">Add Photo</button>
+                <button class="dev-tab-btn" onclick="switchDevTab('dev-news-add')">New Article</button>
+                <button class="dev-tab-btn" onclick="switchDevTab('dev-news-edit')">Edit Article</button>
+            </div>
+
+            <div id="dev-portfolio" class="dev-section active">
+                <label>Image Filename</label>
+                <input type="text" id="add-img-file" placeholder="e.g. IMG_9999.jpg">
+                <label>Category</label>
+                <select id="add-img-cat">
+                    <option value="football">Football</option>
+                    <option value="basketball">Basketball</option>
+                    <option value="tennis">Tennis</option>
+                </select>
+                <button class="action-btn" onclick="addPortfolioItem()">Publish to Portfolio</button>
+            </div>
+
+            <div id="dev-news-add" class="dev-section">
+                <label>Article Title</label>
+                <input type="text" id="add-news-title" placeholder="Title">
+                <label>Publication Date</label>
+                <input type="date" id="add-news-date">
+                <label>Cover Image Filename</label>
+                <input type="text" id="add-news-img" placeholder="e.g. IMG_8888.jpg">
+                <label>Short Excerpt</label>
+                <input type="text" id="add-news-excerpt" placeholder="A brief summary...">
+                <label>Full Content Body</label>
+                <textarea id="add-news-body" placeholder="Write your article here..."></textarea>
+                <button class="action-btn" onclick="addNewsItem()">Publish New Article</button>
+            </div>
+
+            <div id="dev-news-edit" class="dev-section">
+                <label>Select Article to Edit</label>
+                <select id="edit-news-select" onchange="loadArticleForEditing()"></select>
+                
+                <div id="edit-news-fields" style="display: none; margin-top: 20px;">
+                    <label>Article Title</label>
+                    <input type="text" id="edit-news-title">
+                    <label>Publication Date</label>
+                    <input type="date" id="edit-news-date">
+                    <label>Cover Image</label>
+                    <input type="text" id="edit-news-img">
+                    <label>Short Excerpt</label>
+                    <input type="text" id="edit-news-excerpt">
+                    <label>Full Content Body</label>
+                    <textarea id="edit-news-body"></textarea>
+                    
+                    <button class="action-btn" onclick="saveEditedArticle()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CMS STATE MANAGEMENT (LocalStorage) ---
+        
+        // Define Default Data First
+        const defaultPortfolio = [
+            { file: 'IMG_3509.jpg', cat: 'tennis' },
+            { file: 'IMG_1754.jpg', cat: 'tennis' },
+            { file: 'IMG_2827.jpg', cat: 'tennis' },
+            { file: 'IMG_7914.jpg', cat: 'football' },
+            { file: 'IMG_8013.jpg', cat: 'football' },
+            { file: '_MG_5275.jpg', cat: 'basketball' },
+            { file: '_MG_5538.jpg', cat: 'basketball' }
+        ];
+
+        const defaultNews = [
+            { 
+                id: 1,
+                title: "FC Skillz: Emotion of the Final Whistle", 
+                date: "2026-06-08", 
+                img: "IMG_7914.jpg", 
+                excerpt: "Capturing the raw intensity of the championship game's defining moments.",
+                body: "Football photography is about anticipation. Standing on the sidelines of the FC Skillz match, the atmosphere was electric...\n\nThe final whistle brings an explosion of unfiltered emotion that you only have a split second to capture."
+            },
+            { 
+                id: 2,
+                title: "Leimonias Club Championship", 
+                date: "2026-05-22", 
+                img: "IMG_3509.jpg", 
+                excerpt: "A masterclass in precision and background compression on the baseline.",
+                body: "When shooting the Leimonias Club Championship Finals, the challenge was isolating the peak focus amidst a chaotic environment.\n\nThe baseline rallies were intense, requiring absolute manual tracking to lock onto the ball and the player's eye contact simultaneously."
+            }
+        ];
+
+        // Initialize state in LocalStorage so EVERYTHING is editable
+        let appPortfolio = JSON.parse(localStorage.getItem('nm_live_portfolio'));
+        if (!appPortfolio) {
+            appPortfolio = defaultPortfolio;
+            localStorage.setItem('nm_live_portfolio', JSON.stringify(appPortfolio));
+        }
+
+        let appNews = JSON.parse(localStorage.getItem('nm_live_news'));
+        if (!appNews) {
+            appNews = defaultNews;
+            localStorage.setItem('nm_live_news', JSON.stringify(appNews));
+        }
+
+        // --- CORE NAVIGATION ---
+        function switchMainTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId + '-tab').classList.add('active');
+            document.getElementById('nav-' + tabId).classList.add('active');
+            
+            // Re-trigger scroll logic if returning to home
+            if(tabId === 'home') { window.dispatchEvent(new Event('scroll')); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- HOME: CINEMATIC SCROLL ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('story-container');
+            const slides = document.querySelectorAll('.slide');
+            const scrollPerSlide = 1 / (slides.length - 1);
+
+            window.addEventListener('scroll', () => {
+                // Only process if Home tab is active
+                if(!document.getElementById('home-tab').classList.contains('active')) return;
+
+                const rect = container.getBoundingClientRect();
+                let scrollProgress = -rect.top / (rect.height - window.innerHeight);
+                scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+                const globalScale = 1 + (scrollProgress * 0.15); 
+
+                slides.forEach((slide, index) => {
+                    const img = slide.querySelector('img');
+                    const peak = index * scrollPerSlide;
+                    const distance = Math.abs(scrollProgress - peak);
+                    let opacity = 1 - (distance / scrollPerSlide);
+                    
+                    slide.style.opacity = Math.max(0, Math.min(1, opacity));
+                    img.style.transform = `scale(${globalScale})`;
+                });
+            });
+        });
+
+        // --- PORTFOLIO LOGIC ---
+        function renderGallery(filter = 'all') {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = ''; 
+
+            appPortfolio.forEach(item => {
+                if (filter === 'all' || item.cat === filter) {
+                    const div = document.createElement('div');
+                    div.className = 'masonry-item';
+                    div.innerHTML = `<img src="${item.file}" alt="${item.cat}">`;
+                    grid.appendChild(div);
+                }
+            });
+        }
+
+        function filterGallery(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderGallery(category);
+        }
+
+        // --- NEWS LOGIC ---
+        function renderNews() {
+            const grid = document.getElementById('news-grid-container');
+            grid.innerHTML = ''; 
+
+            // Sort newest first for display
+            const sortedNews = [...appNews].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            sortedNews.forEach((item) => {
+                const article = document.createElement('div');
+                article.className = 'news-card';
+                article.onclick = () => openArticle(item.id);
+                article.innerHTML = `
+                    <img src="${item.img}" class="news-img" alt="Cover">
+                    <div class="news-content">
+                        <span class="news-date">${new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        <h2 class="news-title">${item.title}</h2>
+                        <p class="news-excerpt">${item.excerpt}</p>
+                    </div>
+                `;
+                grid.appendChild(article);
+            });
+        }
+
+        function openArticle(id) {
+            const article = appNews.find(a => a.id === id);
+            if(!article) return;
+
+            document.getElementById('reader-title').innerText = article.title;
+            document.getElementById('reader-date').innerText = new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('reader-img').src = article.img;
+            document.getElementById('reader-body').innerText = article.body;
+            
+            document.getElementById('article-reader').style.display = 'block';
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeArticle() {
+            document.getElementById('article-reader').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- BOOKING LOGIC ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Force the calendar dropdown to only allow today or future dates
+            const dateInput = document.getElementById('b-date');
+            const today = new Date();
+            // Format to YYYY-MM-DD correcting for timezone shift
+            const offset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - offset)).toISOString().split('T')[0];
+            dateInput.min = localISOTime;
+        });
+
+        document.getElementById('auto-email-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('b-name').value;
+            const contact = document.getElementById('b-contact').value;
+            const pkg = document.getElementById('b-package').value;
+            const sport = document.getElementById('b-sport').value;
+            const date = document.getElementById('b-date').value;
+            const details = document.getElementById('b-details').value;
+
+            const targetEmail = "nishantmewar@icloud.com";
+            const subject = encodeURIComponent(`NMSports Booking: ${sport} - ${name}`);
+            const bodyText = `New Booking Request from NMSports\n\n` +
+                             `Name: ${name}\n` +
+                             `Contact: ${contact}\n` +
+                             `Package: ${pkg}\n` +
+                             `Sport: ${sport}\n` +
+                             `Requested Date: ${date}\n\n` +
+                             `Details:\n${details}\n`;
+
+            window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+        });
+
+        // --- DEVELOPER PANEL LOGIC ---
+        let keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (keys['Shift'] && (keys['d'] || keys['D'])) {
+                document.getElementById('auth-modal').style.display = 'flex';
+                document.getElementById('dev-password').focus();
+            }
+        });
+        document.addEventListener('keyup', (e) => { delete keys[e.key]; });
+
+        function checkPassword() {
+            if(document.getElementById('dev-password').value === "NM2026") {
+                document.getElementById('auth-modal').style.display = 'none';
+                document.getElementById('dev-panel').style.display = 'flex';
+                document.getElementById('dev-password').value = '';
+                document.getElementById('auth-error').style.display = 'none';
+                populateEditDropdown();
+            } else {
+                document.getElementById('auth-error').style.display = 'block';
+            }
+        }
+
+        function closeDevPanel() {
+            document.getElementById('auth-modal').style.display = 'none';
+            document.getElementById('dev-panel').style.display = 'none';
+        }
+
+        function switchDevTab(tabId) {
+            document.querySelectorAll('.dev-section').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.dev-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if(tabId === 'dev-news-edit') populateEditDropdown();
+        }
+
+        function addPortfolioItem() {
+            const file = document.getElementById('add-img-file').value;
+            const cat = document.getElementById('add-img-cat').value;
+            if(file) {
+                appPortfolio.unshift({ file, cat }); // Add to top
+                localStorage.setItem('nm_live_portfolio', JSON.stringify(appPortfolio));
+                renderGallery(document.querySelector('.filter-btn.active').innerText.toLowerCase());
+                alert("Photo Added!");
+                document.getElementById('add-img-file').value = '';
+            }
+        }
+
+        function addNewsItem() {
+            const title = document.getElementById('add-news-title').value;
+            const date = document.getElementById('add-news-date').value;
+            const img = document.getElementById('add-news-img').value;
+            const excerpt = document.getElementById('add-news-excerpt').value;
+            const body = document.getElementById('add-news-body').value;
+
+            if(title && date && body) {
+                const newId = Date.now(); // Unique ID
+                appNews.push({ id: newId, title, date, img, excerpt, body });
+                localStorage.setItem('nm_live_news', JSON.stringify(appNews));
+                renderNews();
+                alert("Article Published!");
+                document.querySelectorAll('#dev-news-add input, #dev-news-add textarea').forEach(i => i.value = '');
+            }
+        }
+
+        function populateEditDropdown() {
+            const select = document.getElementById('edit-news-select');
+            select.innerHTML = '<option value="">-- Select an Article --</option>';
+            appNews.forEach(article => {
+                const opt = document.createElement('option');
+                opt.value = article.id;
+                opt.innerText = `${article.title} (${article.date})`;
+                select.appendChild(opt);
+            });
+            document.getElementById('edit-news-fields').style.display = 'none';
+        }
+
+        function loadArticleForEditing() {
+            const id = parseInt(document.getElementById('edit-news-select').value);
+            const article = appNews.find(a => a.id === id);
+            if(article) {
+                document.getElementById('edit-news-title').value = article.title;
+                document.getElementById('edit-news-date').value = article.date;
+                document.getElementById('edit-news-img').value = article.img;
+                document.getElementById('edit-news-excerpt').value = article.excerpt;
+                document.getElementById('edit-news-body').value = article.body;
+                document.getElementById('edit-news-fields').style.display = 'block';
+            } else {
+                document.getElementById('edit-news-fields').style.display = 'none';
+            }
+        }
+
+        function saveEditedArticle() {
+            const id = parseInt(document.getElementById('edit-news-select').value);
+            const index = appNews.findIndex(a => a.id === id);
+            
+            if(index !== -1) {
+                appNews[index] = {
+                    id: id,
+                    title: document.getElementById('edit-news-title').value,
+                    date: document.getElementById('edit-news-date').value,
+                    img: document.getElementById('edit-news-img').value,
+                    excerpt: document.getElementById('edit-news-excerpt').value,
+                    body: document.getElementById('edit-news-body').value
+                };
+                
+                localStorage.setItem('nm_live_news', JSON.stringify(appNews));
+                renderNews();
+                alert("Article Updated Successfully!");
+                populateEditDropdown();
+            }
+        }
+
+        // Boot Application
+        document.addEventListener("DOMContentLoaded", () => {
+            renderGallery();
+            renderNews();
+        });
+    </script>
+</body>
+</html>
